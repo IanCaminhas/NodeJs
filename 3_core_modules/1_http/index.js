@@ -4,6 +4,9 @@ const http = require('http');
 Assim, o usuário vai recebr as respostas pertinentes. */
 const port = 3000
 
+/*Agora estou enviando um texto, não estou enviando um HTML.
+Ao inspecionar a página no navegador, não tenho as tags HTML. 
+*/
 const server = http.createServer((req,res) =>{
     /*Escevendo a resposta para o usuário. 
     Estou retornando texto. 
