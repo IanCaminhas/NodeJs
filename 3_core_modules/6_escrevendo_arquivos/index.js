@@ -1,6 +1,7 @@
 /* Proposta da aula:
 Receber o nome do usuário e persistir esse nome no arquivo.
-
+Problema desta aula:
+    O método fs.writeFile() substitui tudo que está em um arquivo.
 */
 
 const http = require('http');
