@@ -9,9 +9,9 @@ const fs = require('fs');
 
 console.log('Iniciamos o projeto conta bancária');
 
-operation();
+operacao();
 
-function operation() {
+function operacao() {
     /*
         A função inquirer.prompt() recebe um array de objetos, onde cada objeto representa uma pergunta que será feita ao usuário.
             Dentro do array, tenho um único objeto que define a pergunta.
@@ -40,14 +40,13 @@ function operation() {
         } else if (action === 'Depositar') {
             depositarValor();
         } else if (action === 'Consultar Saldo') {
-
+            consultarSaldo();
         } else if(action === 'Sacar') {
 
         } else if(action === 'Sair') {
             console.log(chalk.bgBlue.black('Obrigado por usar o nosso banco!'));
             //Encerrando o programa, ou seja, a execução do sistema.
             process.exit();
-
         }
     })
     .catch((err) => console.log(err)); //Se ocorrer um erro durante o processo (por exemplo, problemas de entrada), o bloco catch realiza a captura.
@@ -95,15 +94,15 @@ function cadastrarContaBancaria() {
             E se o nome do arquivo não existir. 
             Agora vou criar a conta do usuário como um .json
         
-            '{"balance": 0}' - vai escrever no json. 
+            '{"saldo": 0}' - vai escrever no json. 
                 Por isso o formato chave-valor. 
         */
-        fs.writeFileSync(`contas/${nomeConta}.json`,'{"balance": 0}', function (err) {
+        fs.writeFileSync(`contas/${nomeConta}.json`,'{"saldo": 0}', function (err) {
             console.log(err);
         });
 
         console.log(chalk.green('Parabéns, a sua conta foi criada!'));
-        operation();
+        operacao();
 
     }).catch(err => console.log(err));
 
@@ -125,16 +124,84 @@ function depositarValor() {
         if(!verificandoConta(nomeConta)) {
             return depositarValor();
         }
+
+        inquirer.prompt([{
+            name: 'quantia',
+            message: 'Quanto você deseja depositar ?'
+        },
+        ]).then((answer) => {
+            const quantia = answer['quantia'];
+
+            //Adicionando quantia
+            adicionandoQuantia(nomeConta, quantia);
+
+        }).catch(err => console.log(err));
+
+
     }).catch(err => console.log(err));
 }
 
 function verificandoConta(nomeConta) {
-
     if(!fs.existsSync(`contas/${nomeConta}.json`)) {
         console.log(chalk.bgRed.black('Esta conta não existe, escolha outro nome!'));
         return false;
     }
-
     return true;
+}
 
+function adicionandoQuantia(nomeConta, quantia) {
+    const dadosConta = getConta(nomeConta);
+
+    //Caso a quantia não for definida, vou exibir uma mensagem e executar a função depositarValor() novamente
+    if(!quantia) {
+        console.log(chalk.bgRed.black('Ocorreu um erro, tente novamente mais tarde!'));
+        return depositarValor();
+    }
+
+    dadosConta.saldo = parseFloat(quantia) + parseFloat(dadosConta.saldo);
+
+    fs.writeFileSync(
+        `contas/${nomeConta}.json`,
+        JSON.stringify(dadosConta),
+        function (err) {
+            console.log(err);
+        },
+    );
+
+    console.log(chalk.green(`Foi depositado o valor de R$${quantia} na sua conta`));
+    operacao();
+}
+
+function getConta(nomeConta) {
+    const contaJSON = fs.readFileSync(`contas/${nomeConta}.json`, {
+        encoding: 'utf8',
+        flag: 'r' //apenas quero ler o arquivo
+    })
+
+    return JSON.parse(contaJSON)
+}
+
+function consultarSaldo() {
+    inquirer.prompt([
+        {
+            name: 'nomeConta',
+            message: 'Qual o nome da sua conta ?'
+        }
+    ]).then((answer) => {
+        const nomeConta = answer['nomeConta'];
+
+        /*Verificando se a conta existe. 
+        Se a conta não existe, vou executar a mesma função novamente. 
+        Objetivo: usuário digitar novamente o nome para consultar o saldo. */
+        if(!verificandoConta(nomeConta)) {
+            return consultarSaldo();
+        }
+
+        const dadosConta = getConta(nomeConta);
+
+        console.log(chalk.bgBlue.black(`Olá, o saldo da sua conta é de R$${dadosConta.saldo}`));
+        //Depois de exibir, vou dar opção para o usuário realizar outra operação.
+        operacao();
+
+    }).catch(err => console.log(err));
 }
