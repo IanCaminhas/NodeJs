@@ -42,7 +42,7 @@ function operacao() {
         } else if (action === 'Consultar Saldo') {
             consultarSaldo();
         } else if(action === 'Sacar') {
-
+            sacarValor();
         } else if(action === 'Sair') {
             console.log(chalk.bgBlue.black('Obrigado por usar o nosso banco!'));
             //Encerrando o programa, ou seja, a execução do sistema.
@@ -141,14 +141,6 @@ function depositarValor() {
     }).catch(err => console.log(err));
 }
 
-function verificandoConta(nomeConta) {
-    if(!fs.existsSync(`contas/${nomeConta}.json`)) {
-        console.log(chalk.bgRed.black('Esta conta não existe, escolha outro nome!'));
-        return false;
-    }
-    return true;
-}
-
 function adicionandoQuantia(nomeConta, quantia) {
     const dadosConta = getConta(nomeConta);
 
@@ -170,6 +162,71 @@ function adicionandoQuantia(nomeConta, quantia) {
 
     console.log(chalk.green(`Foi depositado o valor de R$${quantia} na sua conta`));
     operacao();
+}
+
+//Estou sacando um valor da conta do usuário
+function sacarValor() {
+    inquirer.prompt([
+        {
+            name:'nomeConta',
+            message: 'Qual o nome da sua conta ?'
+        }
+    ]).then((answer) =>{
+        const nomeConta = answer['nomeConta'];
+
+        if(!verificandoConta(nomeConta)) {
+            return sacarValor();
+        }
+
+        inquirer.prompt([
+            {
+                name: 'quantia',
+                message: 'Quanto você deseja sacar ?'
+            }
+        ]).then((answer) => {
+            const quantia = answer['quantia'];
+            removerQuantiaDaConta(nomeConta, quantia);
+        }).catch(err => console.log(err))
+
+    }).catch()
+}
+
+function removerQuantiaDaConta(nomeConta, quantia) {
+    const dadosConta = getConta(nomeConta);
+
+    //Se a quantia não for definida, vou exibir um erro.
+    if(!quantia) {
+        console.log(chalk.bgRed.black('Ocorreu um erro, tente novamente mais tarde!'));
+        return sacarValor();
+    }
+
+    //Se a quantia for maior do que o saldo da conta, vou exibir um erro.
+    if(quantia > dadosConta.saldo) {
+        console.log(chalk.bgRed.black('Valor indisponível!'));
+        return sacarValor();
+    }
+
+    dadosConta.saldo = parseFloat(dadosConta.saldo) - parseFloat(quantia);
+
+    fs.writeFileSync(
+        `contas/${nomeConta}.json`, 
+        JSON.stringify(dadosConta), 
+        function (err) {
+            console.log(err);
+        }, 
+    );
+
+    console.log(chalk.green(`Foi realizado um saque de R$${quantia} da sua conta!`));
+    operacao();
+}
+
+
+function verificandoConta(nomeConta) {
+    if(!fs.existsSync(`contas/${nomeConta}.json`)) {
+        console.log(chalk.bgRed.black('Esta conta não existe, escolha outro nome!'));
+        return false;
+    }
+    return true;
 }
 
 function getConta(nomeConta) {
