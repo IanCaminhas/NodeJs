@@ -1,0 +1,26 @@
+<!-- <h1></h1> e <p></p> serão inseridos na tag {{{body}}} do arquivo /layouts/main.handlebars-->
+
+<h1>Olá Handlebars</h1>
+<!--
+    {{usuario.name}} {{usuario.sobrenome}}
+    Estou exibindo um dado dinâmico.
+    Estou pegando do arquivo index.js.
+    Poderia vir de um BD.
+
+-->
+<p>O nome do usuário é {{usuario.nome}} {{usuario.sobrenome}} e ele tem {{usuario.idade}} anos</p>
+<h2>{{palavra}}</h2>
+<!--
+Não posso usar:
+{{#if auth === true}}
+
+Ou seja:
+    Não consigo usar or ou and.
+	Se o valor for proveniente de um resultado lógico, essa decisão vai ter que vir do back-end.
+
+-->
+{{#if auth}}
+    <p>
+        Você está autenticado, <a href="/dashboard">clique aqui</a> para acessar a área de membros!
+    </p>
+{{/if}}
