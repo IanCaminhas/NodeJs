@@ -1,0 +1,23 @@
+<!-- <h1></h1> e <p></p> serão inseridos na tag {{{body}}} do arquivo /layouts/main.handlebars-->
+<h1>Olá Handlebars</h1>
+
+{{#if estaAprovado}}
+    <p>Parabéns, o seu cadastro foi aprovado</p>
+{{else}}
+    <p>O seu cadastro necessita de aprovação para acesso total do sistema!</p>
+{{/if}}
+
+<!--
+    {{usuario.name}} {{usuario.sobrenome}}
+    Estou exibindo um dado dinâmico.
+    Estou pegando do arquivo index.js.
+    Poderia vir de um BD.
+-->
+<p>O nome do usuário é {{usuario.nome}} {{usuario.sobrenome}} e ele tem {{usuario.idade}} anos</p>
+<h2>{{palavra}}</h2>
+
+{{#if auth}}
+    <p>
+        Você está autenticado, <a href="/dashboard">clique aqui</a> para acessar a área de membros!
+    </p>
+{{/if}}
