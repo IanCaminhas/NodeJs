@@ -1,0 +1,50 @@
+/* Ajuda a centralizar o conteúdo */
+* {
+    font-family: Helvetica;
+    margin: 0;
+}
+
+#navbar {
+    border-bottom: 1px solid #CCC;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+#navbar ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+}
+
+#navbar ul li {
+    margin-left: 1em;
+}
+
+/* Ajuda a centralizar o conteúdo */
+h1 {
+    text-align: center;
+}
+
+/* Ajuda a centralizar o conteúdo */
+.form {
+    width: 450px;
+    margin: 0 auto;
+}
+
+/* Deixa o formulário todo alinhado */
+.form-control {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: .5em;
+}
+/*Estlizando a label*/
+.form-control label {
+    font-weight: bold;
+    margin-bottom: .3em;
+}
+
+/*Aumentando o espaçamento interno do input */
+.form-control input {
+    padding: 5px;
+}
+
