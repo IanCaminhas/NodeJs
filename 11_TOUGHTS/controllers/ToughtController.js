@@ -1,9 +1,45 @@
 const Tought = require('../models/Tought')
 const User = require('../models/User')
 
+const { Op } = require('sequelize')
+
 module.exports = class ToughtsController {
     static async showToughts(req, res) {
-        res.render('toughts/home')
+        let search = ''
+
+        if(req.query.search) {
+            search = req.query.search
+        }
+
+        let order = 'DESC'
+
+        if(req.query.order === 'old') {
+            order = 'ASC'
+        } else {
+            order = 'DESC'
+        }
+        
+        //include: User => O usuário vai ser incluso na tarefa
+        const toughtsData = await Tought.findAll({
+            include: User,
+            where: {
+                title: {[Op.like]: `%${search}%`}
+            },
+            order: [['createdAt', order]]
+        })
+
+        //plain: true => Vão ser jogados no mesmo array o user e o tought
+        const toughts = await toughtsData.map((result) => result.get({ plain: true }))
+
+        let toughtsQty = toughts.length
+
+        //0 para o handlebars não significa falso. Por isso esse tratamento com if. É uma limitação do handlebars 
+        if(toughtsQty === 0) {
+            toughtsQty = false
+        }
+
+        res.render('toughts/home', {toughts, search, toughtsQty})
+
     }
 
     static async dashboard(req, res) {
